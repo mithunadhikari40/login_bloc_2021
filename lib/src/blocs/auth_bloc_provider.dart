@@ -8,6 +8,7 @@ class AuthBlocProvider extends InheritedWidget {
    return true;
   }
   AuthBlocProvider({Key? key,required Widget child}) : super(key: key,child: child);
+
   static AuthBloc of (BuildContext context){
     final result = context.dependOnInheritedWidgetOfExactType<AuthBlocProvider>();
     return result!.bloc;

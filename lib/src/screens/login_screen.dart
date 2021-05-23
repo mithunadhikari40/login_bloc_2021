@@ -62,7 +62,7 @@ class LoginScreen extends StatelessWidget {
   Widget buildSubmitButton(AuthBloc authBloc) {
     return StreamBuilder(
         stream: authBloc.loadingStatusStream,
-        // initialData: false,
+        initialData: false,
         builder: (context, AsyncSnapshot<bool> loadingSnapshot) {
           return StreamBuilder(
               stream: authBloc.buttonStream,
@@ -75,12 +75,12 @@ class LoginScreen extends StatelessWidget {
                       primary: Colors.blueAccent,
                     ),
                     onPressed: snapshot.hasData &&
-                            (!loadingSnapshot.hasData || !loadingSnapshot.data!)
+                            (!loadingSnapshot.data!)
                         ? () {
                             _onSubmit(authBloc, context);
                           }
                         : null,
-                    child: loadingSnapshot.hasData && loadingSnapshot.data!
+                    child:  loadingSnapshot.data!
                         ? CircularProgressIndicator()
                         : Text("Submit"),
                   ),
