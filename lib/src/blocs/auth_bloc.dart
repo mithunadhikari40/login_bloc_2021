@@ -32,6 +32,8 @@ class AuthBloc  with AuthValidator{
          (a, b, c) => true);
 
 
+ String get currentEmail => _emailController.hasValue ? _emailController.value :"temp@gmail.com";
+
 
  void getData(){
    final email = _emailController.value;

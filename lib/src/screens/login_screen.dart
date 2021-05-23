@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:login_bloc/src/blocs/auth_bloc.dart';
 import 'package:login_bloc/src/blocs/auth_bloc_provider.dart';
+import 'package:login_bloc/src/screens/second_screen.dart';
+import 'package:login_bloc/src/widgets/password_input.dart';
 
 class LoginScreen extends StatelessWidget {
   @override
@@ -14,11 +16,15 @@ class LoginScreen extends StatelessWidget {
           children: [
             buildEmailField(authBloc),
             SizedBox(height: 16),
-            buildPasswordField(authBloc),
+            PasswordInput(),
             SizedBox(height: 16),
             buildGenderField(authBloc),
             SizedBox(height: 16),
             buildSubmitButton(authBloc),
+            SizedBox(height: 16),
+            SecondScreen()
+
+
           ],
         ),
       ),
@@ -42,22 +48,6 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget buildPasswordField(AuthBloc authBloc) {
-    return StreamBuilder(
-        stream: authBloc.passwordStream,
-        builder: (context, AsyncSnapshot<String> snapshot) {
-          return TextField(
-            onChanged: authBloc.changePassword,
-            obscureText: true,
-            decoration: InputDecoration(
-                labelText: "Your password",
-                hintText: "password",
-                border: OutlineInputBorder(),
-                errorText:
-                    !snapshot.hasError ? null : snapshot.error.toString()),
-          );
-        });
-  }
 
   Widget buildSubmitButton(AuthBloc authBloc) {
     return StreamBuilder(
@@ -100,6 +90,14 @@ class LoginScreen extends StatelessWidget {
         SnackBar(content: Text("Sign up failed")),
       );
     } else {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_){
+          return SecondScreen();
+        })
+      );
+
+
+
       //todo navigate to the other screen
     }
   }
