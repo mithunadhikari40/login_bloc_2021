@@ -7,7 +7,6 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AuthBloc authBloc = AuthBlocProvider.of(context);
-    authBloc.changeButtonStatus(false);
     return Container(
       padding: EdgeInsets.all(32),
       child: Center(
@@ -62,27 +61,47 @@ class LoginScreen extends StatelessWidget {
 
   Widget buildSubmitButton(AuthBloc authBloc) {
     return StreamBuilder(
-        stream: authBloc.buttonValidationStream,
-        builder: (context, AsyncSnapshot<List<bool>> snapshot) {
-          return Container(
-            width: double.infinity,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.all(16), primary: Colors.blueAccent),
-              onPressed: snapshot.hasData && !snapshot.data![0]
-                  ? () async {
-                      authBloc.getData();
-                      authBloc.changeButtonStatus(true);
-                      await Future.delayed(Duration(seconds: 2));
-                      authBloc.changeButtonStatus(false);
-                    }
-                  : null,
-              child: snapshot.hasData && snapshot.data![0]
-                  ? SizedBox(child: CircularProgressIndicator(),height: 16,width: 16,)
-                  : Text("Submit"),
-            ),
-          );
+        stream: authBloc.loadingStatusStream,
+        // initialData: false,
+        builder: (context, AsyncSnapshot<bool> loadingSnapshot) {
+          return StreamBuilder(
+              stream: authBloc.buttonStream,
+              builder: (context, AsyncSnapshot<bool> snapshot) {
+                return Container(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.all(16),
+                      primary: Colors.blueAccent,
+                    ),
+                    onPressed: snapshot.hasData &&
+                            (!loadingSnapshot.hasData || !loadingSnapshot.data!)
+                        ? () {
+                            _onSubmit(authBloc, context);
+                          }
+                        : null,
+                    child: loadingSnapshot.hasData && loadingSnapshot.data!
+                        ? CircularProgressIndicator()
+                        : Text("Submit"),
+                  ),
+                );
+              });
         });
+  }
+
+  Future _onSubmit(AuthBloc authBloc, BuildContext context) async {
+    authBloc.getData();
+    authBloc.changeLoadingStatus(true);
+    final response = await authBloc.submitData();
+    authBloc.changeLoadingStatus(false);
+    if (response == null) {
+      //todo show a snackbar message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Sign up failed")),
+      );
+    } else {
+      //todo navigate to the other screen
+    }
   }
 
   Widget buildGenderField(AuthBloc authBloc) {
